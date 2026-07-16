@@ -1,0 +1,45 @@
+DELIMITER $$
+
+CREATE PROCEDURE fine_cal(IN roll_no INT, IN bname VARCHAR(50))
+BEGIN
+    DECLARE i_date DATE;
+    DECLARE diff INT DEFAULT 0;
+    DECLARE fine_amt INT DEFAULT 0;
+
+    -- Exception handling if table or record not found
+    DECLARE EXIT HANDLER FOR SQLEXCEPTION 
+    SELECT 'Error: Table or record not found' AS Message;
+
+    -- Fetch the date of issue
+    SELECT Dateofissue 
+    INTO i_date 
+    FROM Borrower 
+    WHERE Rollin = roll_no AND NameofBook = bname;
+
+    -- Calculate how many days have passed
+    SELECT DATEDIFF(CURDATE(), i_date) INTO diff;
+
+    -- Calculate fine according to days
+    IF diff > 15 AND diff <= 30 THEN
+        SET fine_amt = (diff - 15) * 5;
+        INSERT INTO Fine VALUES (roll_no, CURDATE(), fine_amt);
+
+    ELSEIF diff > 30 THEN
+        SET fine_amt = (15 * 5) + ((diff - 30) * 50);
+        INSERT INTO Fine VALUES (roll_no, CURDATE(), fine_amt);
+    END IF;
+
+    -- Update book status to Returned (R)
+    UPDATE Borrower 
+    SET Status = 'R' 
+    WHERE Rollin = roll_no AND NameofBook = bname;
+
+    -- Display result for user clarity
+    SELECT roll_no AS Roll_No, 
+           bname AS Book_Name, 
+           diff AS Days_Borrowed, 
+           fine_amt AS Fine_Amount;
+
+END$$
+
+DELIMITER ;
