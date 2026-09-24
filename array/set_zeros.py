@@ -2,7 +2,7 @@ arr = [[1,1,1,1], [1,0,0,1], [1,1,0,1], [1,1,1,1]]
 n = len(arr)
 m = len(arr[0])
 
-"""BRUTE APPROACH
+"""BRUTE APPROACH n^3
 def mark_row(i):
     for j in range(m):
         if arr[i][j] != 0:
@@ -28,6 +28,8 @@ for i in range(n):
 
 print(arr)"""
 
+
+"""BETTER 2 LISTS n^2
 row = [0 for r in range(n)]
 col = [0 for i in range(m)]
 
@@ -42,4 +44,4 @@ for i in range(n):
         if row[i] == 1 or col[j] == 1:
             arr[i][j] = 0
 
-print(arr)
+print(arr)"""
